@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bouncer", "Bouncer\Bouncer.csproj", "{A99F71E9-0DC6-4F40-BE9A-C7E1403090AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bouncer.Test", "Bouncer.Test\Bouncer.Test.csproj", "{E5922ADD-2D41-4359-8866-3B834EC3C3D9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A99F71E9-0DC6-4F40-BE9A-C7E1403090AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A99F71E9-0DC6-4F40-BE9A-C7E1403090AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A99F71E9-0DC6-4F40-BE9A-C7E1403090AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A99F71E9-0DC6-4F40-BE9A-C7E1403090AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5922ADD-2D41-4359-8866-3B834EC3C3D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5922ADD-2D41-4359-8866-3B834EC3C3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5922ADD-2D41-4359-8866-3B834EC3C3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5922ADD-2D41-4359-8866-3B834EC3C3D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
