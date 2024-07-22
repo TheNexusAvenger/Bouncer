@@ -12,42 +12,58 @@ public class ConditionTest
     [OneTimeSetUp]
     public void SetUp()
     {
-        Condition.ConditionDefinitions.Add(new ConditionDefinition()
+        Condition.AddConditionDefinition(new ConditionDefinition()
         {
             Name = "Test1",
             TotalArguments = 1,
             Evaluate = (_, _) => true,
         });
-        Condition.ConditionDefinitions.Add(new ConditionDefinition()
+        Condition.AddConditionDefinition(new ConditionDefinition()
         {
             Name = "Test2",
             TotalArguments = 1,
             Evaluate = (_, _) => true,
         });
-        Condition.ConditionDefinitions.Add(new ConditionDefinition()
+        Condition.AddConditionDefinition(new ConditionDefinition()
         {
             Name = "Test2",
             TotalArguments = 2,
             Evaluate = (_, _) => true,
         });
-        Condition.ConditionDefinitions.Add(new ConditionDefinition()
+        Condition.AddConditionDefinition(new ConditionDefinition()
         {
             Name = "Test3",
             TotalArguments = 0,
             Evaluate = (_, _) => true,
         });
-        Condition.ConditionDefinitions.Add(new ConditionDefinition()
+        Condition.AddConditionDefinition(new ConditionDefinition()
         {
             Name = "Test4",
             TotalArguments = 0,
             Evaluate = (_, _) => false,
         });
-        Condition.ConditionDefinitions.Add(new ConditionDefinition()
+        Condition.AddConditionDefinition(new ConditionDefinition()
         {
             Name = "Test5",
             TotalArguments = 0,
             Evaluate = (_, _) => throw new Exception("Should not have run."),
         });
+    }
+
+    [Test]
+    public void TestAddConditionDefinitionDuplicate()
+    {
+        
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+        {
+            Condition.AddConditionDefinition(new ConditionDefinition()
+            {
+                Name = "Test2",
+                TotalArguments = 2,
+                Evaluate = (_, _) => true,
+            });
+        });
+        Assert.That(exception.Message, Is.EqualTo("There is an existing condition named \"Test2\" with 2 arguments."));
     }
 
     [Test]

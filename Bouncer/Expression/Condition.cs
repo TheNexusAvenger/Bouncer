@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Bouncer.Expression.Definition;
 using Bouncer.Parser;
 using Bouncer.Parser.Model;
@@ -12,9 +13,8 @@ public class Condition
 {
     /// <summary>
     /// List of condition definitions.
-    /// TODO: Restrict access to this.
     /// </summary>
-    public static readonly List<ConditionDefinition> ConditionDefinitions = new List<ConditionDefinition>()
+    private static readonly List<ConditionDefinition> ConditionDefinitions = new List<ConditionDefinition>()
     {
         new ConditionDefinition()
         {
@@ -26,9 +26,8 @@ public class Condition
 
     /// <summary>
     /// List of unary operation definitions.
-    /// TODO: Restrict access to this.
     /// </summary>
-    public static readonly List<UnaryOperationDefinition> UnaryOperationDefinitions = new List<UnaryOperationDefinition>()
+    private static readonly List<UnaryOperationDefinition> UnaryOperationDefinitions = new List<UnaryOperationDefinition>()
     {
         new UnaryOperationDefinition()
         {
@@ -39,9 +38,8 @@ public class Condition
 
     /// <summary>
     /// List of binary operation definitions.
-    /// TODO: Restrict access to this.
     /// </summary>
-    public static readonly List<BinaryOperationDefinition> BinaryOperationDefinitions = new List<BinaryOperationDefinition>()
+    private static readonly List<BinaryOperationDefinition> BinaryOperationDefinitions = new List<BinaryOperationDefinition>()
     {
         new BinaryOperationDefinition()
         {
@@ -54,6 +52,11 @@ public class Condition
             Evaluate = (value1, condition2) => value1 && condition2(),
         },
     };
+
+    /// <summary>
+    /// Semaphore for adding new definitions.
+    /// </summary>
+    private static readonly SemaphoreSlim AddDefinitionSemaphore = new SemaphoreSlim(1);
 
     /// <summary>
     /// Definition of the condition.
@@ -88,6 +91,25 @@ public class Condition
         this._conditionArguments = conditionArguments;
         this._unaryOperations = unaryOperations;
         this._binaryOperations = binaryOperations;
+    }
+
+    /// <summary>
+    /// Adds a condition definition.
+    /// </summary>
+    /// <param name="conditionDefinition">Condition definition to add.</param>
+    public static void AddConditionDefinition(ConditionDefinition conditionDefinition)
+    {
+        AddDefinitionSemaphore.Wait();
+        var existingDefinition = ConditionDefinitions.Where(condition =>
+                conditionDefinition.Name.Equals(condition.Name, StringComparison.InvariantCultureIgnoreCase))
+            .FirstOrDefault(condition => condition.TotalArguments == conditionDefinition.TotalArguments);
+        if (existingDefinition != null)
+        {
+            AddDefinitionSemaphore.Release();
+            throw new InvalidOperationException($"There is an existing condition named \"{conditionDefinition.Name}\" with {conditionDefinition.TotalArguments} arguments.");
+        }
+        ConditionDefinitions.Add(conditionDefinition);
+        AddDefinitionSemaphore.Release();
     }
 
     /// <summary>
