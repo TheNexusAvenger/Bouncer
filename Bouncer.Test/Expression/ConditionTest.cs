@@ -48,6 +48,13 @@ public class ConditionTest
             TotalArguments = 0,
             Evaluate = (_, _) => throw new Exception("Should not have run."),
         });
+        Condition.AddConditionDefinition(new ConditionDefinition()
+        {
+            Name = "Test6",
+            FormatString = "Checks for {0} and {1}.",
+            TotalArguments = 2,
+            Evaluate = (_, _) => true,
+        });
     }
 
     [Test]
@@ -274,5 +281,12 @@ public class ConditionTest
     {
         var result = Condition.FromParsedCondition("(Test1(test1) and not (Test2(test1, test2) or (Test2(test1))) and Test2(test1))").ToString();
         Assert.That(result, Is.EqualTo("(Test1(\"test1\") and not (Test2(\"test1\", \"test2\") or (Test2(\"test1\"))) and Test2(\"test1\"))"));
+    }
+
+    [Test]
+    public void TestToStringFormatted()
+    {
+        var result = Condition.FromParsedCondition("not (not Test6(test1, test2) and Test1(test1))").ToString();
+        Assert.That(result, Is.EqualTo("not (not [Checks for test1 and test2.] and Test1(\"test1\"))"));
     }
 }

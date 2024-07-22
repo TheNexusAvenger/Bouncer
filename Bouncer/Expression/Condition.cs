@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -233,7 +234,19 @@ public class Condition
         // Return the final result.
         if (isGroup)
         {
+            // Format the special-case for groups.
             return $"{unaryOperations}({binaryOperations})";
+        }
+        else if (this.ConditionDefinition.FormatString != null)
+        {
+            // Format the human-readable formatting.
+            // Creating the array is done manually to avoid compiler warnings.
+            var args = new object[this._conditionArguments.Count];
+            for (var i = 0; i < this._conditionArguments.Count; i++)
+            {
+                args[i] = this._conditionArguments[i];
+            } 
+            return $"{unaryOperations}[{string.Format(this.ConditionDefinition.FormatString, args)}]{binaryOperations}";
         }
         return $"{unaryOperations}{this.ConditionDefinition.Name}({arguments}){binaryOperations}";
     }
