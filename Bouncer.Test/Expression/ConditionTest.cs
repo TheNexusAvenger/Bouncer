@@ -247,4 +247,32 @@ public class ConditionTest
         var result4 = Condition.FromParsedCondition("not (not Test3() and not Test4())").Evaluate(123L);
         Assert.That(result4, Is.EqualTo(true));
     }
+
+    [Test]
+    public void TestToString()
+    {
+        var result = Condition.FromParsedCondition("Test2(test1, test2)").ToString();
+        Assert.That(result, Is.EqualTo("Test2(\"test1\", \"test2\")"));
+    }
+
+    [Test]
+    public void TestToStringUnaryOperations()
+    {
+        var result = Condition.FromParsedCondition("not not Test2(test1, test2)").ToString();
+        Assert.That(result, Is.EqualTo("not not Test2(\"test1\", \"test2\")"));
+    }
+
+    [Test]
+    public void TestToStringBinaryOperations()
+    {
+        var result = Condition.FromParsedCondition("Test1(test1) and Test2(test1, test2) or Test2(test1)").ToString();
+        Assert.That(result, Is.EqualTo("Test1(\"test1\") and Test2(\"test1\", \"test2\") or Test2(\"test1\")"));
+    }
+
+    [Test]
+    public void TestToStringGroups()
+    {
+        var result = Condition.FromParsedCondition("(Test1(test1) and not (Test2(test1, test2) or (Test2(test1))) and Test2(test1))").ToString();
+        Assert.That(result, Is.EqualTo("(Test1(\"test1\") and not (Test2(\"test1\", \"test2\") or (Test2(\"test1\"))) and Test2(\"test1\"))"));
+    }
 }

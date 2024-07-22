@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Bouncer.Expression.Definition;
 using Bouncer.Parser;
@@ -207,5 +208,33 @@ public class Condition
 
         // return the result.
         return conditionResult;
+    }
+    
+    /// <summary>
+    /// Converts the condition to a string.
+    /// </summary>
+    /// <returns>A string representation of the condition.</returns>
+    public override string ToString()
+    {
+        // Build the binary operations.
+        var isGroup = (this.ConditionDefinition.Name == "ConditionGroup");
+        var binaryOperations = new StringBuilder();
+        foreach (var binaryOperation in this._binaryOperations)
+        {
+            var leadingOperation = ((isGroup && binaryOperations.Length == 0) ? "" : $" {binaryOperation.OperationDefinition.Name} ");
+            binaryOperations.Append(leadingOperation);
+            binaryOperations.Append(binaryOperation.Condition);
+        }
+        
+        // Build the unary operations and arguments.
+        var unaryOperations = string.Join("", this._unaryOperations.Select(operation => $"{operation.Name} "));
+        var arguments = string.Join(", ",this._conditionArguments.Select(argument => $"\"{argument}\""));
+        
+        // Return the final result.
+        if (isGroup)
+        {
+            return $"{unaryOperations}({binaryOperations})";
+        }
+        return $"{unaryOperations}{this.ConditionDefinition.Name}({arguments}){binaryOperations}";
     }
 }
