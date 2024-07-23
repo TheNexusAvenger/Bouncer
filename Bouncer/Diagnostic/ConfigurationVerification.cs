@@ -19,7 +19,7 @@ public class ConfigurationVerification
         var ruleConfigurationErrors = 0;
         if (configuration.Groups == null)
         {
-            // TODO: Log no groups.
+            Logger.Warn("\"Groups\" is missing from the configuration.");
             ruleConfigurationErrors += 1;
             return new VerifyRulesResult()
             {
@@ -33,19 +33,20 @@ public class ConfigurationVerification
         foreach (var groupRules in configuration.Groups)
         {
             // Add configuration errors for missing fields.
+            Logger.Info($"Configuration for group \"{groupRules.Id}\":");
             if (groupRules.Id == null)
             {
-                // TODO: Log no id.
+                Logger.Error("\"Id\" is missing from Groups configuration entry.");
                 ruleConfigurationErrors += 1;
             }
             if (groupRules.OpenCloudApiKey == null)
             {
-                // TODO: Log no Open Cloud API key.
+                Logger.Error("\"OpenCloudApiKey\" is missing from Groups configuration entry.");
                 ruleConfigurationErrors += 1;
             }
             if (groupRules.Rules == null)
             {
-                // TODO: Log no Rules.
+                Logger.Error("\"Rules\" is missing from Groups configuration entry.");
                 ruleConfigurationErrors += 1;
             }
             if (groupRules.Rules == null) continue;
@@ -56,38 +57,39 @@ public class ConfigurationVerification
                 // Add configuration errors for missing fields.
                 if (rule.Name == null)
                 {
-                    // TODO: Warn about no name.
+                    Logger.Warn("\"Name\" is missing from Groups configuration entry rule.");
                 }
                 if (rule.Rule == null)
                 {
-                    // TODO: Log no Rule.
+                    Logger.Error("\"Rule\" is missing from Groups configuration entry rule.");
                     ruleConfigurationErrors += 1;
                 }
                 if (rule.Action == null)
                 {
-                    // TODO: Log no Action.
+                    Logger.Error("\"Action\" is missing from Groups configuration entry rule.");
                     ruleConfigurationErrors += 1;
                 }
                 if (rule.Rule == null) continue;
                 
                 // Try to parse the rule.
+                var ruleName = $"{rule.Name ?? "[Unnamed rule]"} ({rule.Action ?? JoinRequestAction.Ignore})";
                 try
                 {
                     var parsedCondition = ExpressionParser.FullExpressionParser.Parse(rule.Rule);
                     try
                     {
                         var condition = Condition.FromParsedCondition(parsedCondition);
-                        // TODO: Log rule.
+                        Logger.Info($"Rule {ruleName}: {condition}");
                     }
                     catch (Exception e)
                     {
-                        // TODO: Log exception.
+                        Logger.Error($"Error transforming rule {ruleName}: {e.Message}");
                         transformErrors += 1;
                     }
                 }
                 catch (Exception e)
                 {
-                    // TODO: Log exception.
+                    Logger.Error($"Error parsing rule {ruleName}: {e.Message}");
                     parseErrors += 1;
                 }
             }
