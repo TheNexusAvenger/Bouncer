@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Bouncer.Diagnostic;
 
 namespace Bouncer.State;
 
@@ -74,12 +75,15 @@ public class ConfigurationState
     public async Task ReloadAsync()
     {
         // Read the configuration.
+        Logger.Trace("Attempting to read new configuration.");
         this.CurrentConfiguration = await Configuration.ReadConfigurationAsync();
+        Logger.Trace("Read new configuration.");
         
         // Invoke the changed event if the contents changed.
         var newConfigurationJson = JsonSerializer.Serialize(this.CurrentConfiguration, ConfigurationJsonContext.Default.Configuration);
         if (this._lastConfiguration != null && this._lastConfiguration != newConfigurationJson)
         {
+            Logger.Debug("Configuration updated.");
             ConfigurationChanged?.Invoke(this.CurrentConfiguration);
         }
         this._lastConfiguration = newConfigurationJson;
@@ -95,9 +99,9 @@ public class ConfigurationState
         {
             await this.ReloadAsync();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // No action.
+            Logger.Trace($"An error occured trying to update the configuration. This might be due to a text editor writing the file.\n{e}");
         }
     }
 }
