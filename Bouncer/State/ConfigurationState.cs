@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Bouncer.State;
@@ -15,11 +16,21 @@ public class ConfigurationState
     /// Loaded configuration instance.
     /// </summary>
     public static Configuration Configuration => Instance.CurrentConfiguration;
+
+    /// <summary>
+    /// Event for the configuration changing.
+    /// </summary>
+    public static event Action<Configuration> ConfigurationChanged;
     
     /// <summary>
     /// Loaded configuration instance of the state.
     /// </summary>
     public Configuration CurrentConfiguration { get; private set; } = null!;
+
+    /// <summary>
+    /// Last configuration as JSON.
+    /// </summary>
+    private string? _lastConfiguration = null;
 
     /// <summary>
     /// Creates a configuration state.
@@ -62,7 +73,16 @@ public class ConfigurationState
     /// </summary>
     public async Task ReloadAsync()
     {
+        // Read the configuration.
         this.CurrentConfiguration = await Configuration.ReadConfigurationAsync();
+        
+        // Invoke the changed event if the contents changed.
+        var newConfigurationJson = JsonSerializer.Serialize(this.CurrentConfiguration, ConfigurationJsonContext.Default.Configuration);
+        if (this._lastConfiguration != null && this._lastConfiguration != newConfigurationJson)
+        {
+            ConfigurationChanged?.Invoke(this.CurrentConfiguration);
+        }
+        this._lastConfiguration = newConfigurationJson;
     }
 
     /// <summary>
@@ -73,7 +93,7 @@ public class ConfigurationState
     {
         try
         {
-            this.CurrentConfiguration = await Configuration.ReadConfigurationAsync();
+            await this.ReloadAsync();
         }
         catch (Exception)
         {
