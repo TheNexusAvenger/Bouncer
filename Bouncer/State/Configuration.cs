@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Bouncer.State;
 
@@ -43,12 +44,26 @@ public class GroupConfiguration
     public List<JoinRequestRuleEntry>? Rules { get; set; }
 }
 
+public class LoggingConfiguration
+{
+    /// <summary>
+    /// Minimum log level to show in the logs.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public LogLevel MinimumLogLevel { get; set; } = LogLevel.Information;
+}
+
 public class Configuration
 {
     /// <summary>
     /// List of group configurations managed by the application.
     /// </summary>
     public List<GroupConfiguration>? Groups { get; set; }
+
+    /// <summary>
+    /// Configuration for logging.
+    /// </summary>
+    public LoggingConfiguration Logging { get; set; } = new LoggingConfiguration();
 
     /// <summary>
     /// Reads the configuration from the file system.

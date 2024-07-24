@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
+using Bouncer.State;
 
 namespace Bouncer;
 
@@ -31,6 +32,11 @@ public class Program
     /// <param name="invocationContext">Context for the command line options.</param>
     private static async Task RunApplicationAsync(InvocationContext invocationContext)
     {
+        // Set the minimum log level.
+        var minimumLogLevel = ConfigurationState.Configuration.Logging.MinimumLogLevel;
+        Logger.SetMinimumLogLevel(minimumLogLevel);
+        Logger.Debug($"Set log level to {minimumLogLevel}.");
+        
         // Run the verify option and exit based on the result.
         if (invocationContext.ParseResult.GetValueForOption(VerifyOption))
         {
@@ -38,7 +44,5 @@ public class Program
             await Logger.WaitForCompletionAsync();
             Environment.Exit(-(result.TotalRuleConfigurationErrors + result.TotalParseErrors + result.TotalTransformErrors));
         }
-        
-        // TODO: Run application.
     }
 }
