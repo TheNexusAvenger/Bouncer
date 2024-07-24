@@ -21,6 +21,7 @@ public class JoinRequestRuleEntry
     /// <summary>
     /// Action to perform when the rule applies.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public JoinRequestAction? Action { get; set; }
 }
 

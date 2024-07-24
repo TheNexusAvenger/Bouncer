@@ -20,7 +20,7 @@ public class ConfigurationState
     /// <summary>
     /// Event for the configuration changing.
     /// </summary>
-    public static event Action<Configuration> ConfigurationChanged;
+    public static event Action<Configuration>? ConfigurationChanged;
     
     /// <summary>
     /// Loaded configuration instance of the state.
