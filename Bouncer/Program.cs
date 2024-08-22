@@ -4,6 +4,7 @@ using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
 using Bouncer.State;
+using Bouncer.Web.Server;
 
 namespace Bouncer;
 
@@ -44,5 +45,8 @@ public class Program
             await Logger.WaitForCompletionAsync();
             Environment.Exit(-(result.TotalRuleConfigurationErrors + result.TotalParseErrors + result.TotalTransformErrors));
         }
+        
+        // Run the server.
+        await new WebServer().StartAsync();
     }
 }
