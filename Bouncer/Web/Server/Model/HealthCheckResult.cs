@@ -48,7 +48,7 @@ public class HealthCheckResult
 
 [JsonSerializable(typeof(HealthCheckResult))]
 [JsonSerializable(typeof(HealthCheckConfigurationProblems))]
-[JsonSourceGenerationOptions(WriteIndented=true, IncludeFields = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true)]
 internal partial class HealthCheckResultJsonContext : JsonSerializerContext
 {
 }
