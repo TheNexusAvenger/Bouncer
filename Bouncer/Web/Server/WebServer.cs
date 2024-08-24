@@ -18,6 +18,11 @@ public class WebServer
     public ushort Port { get; set; } = 8000;
 
     /// <summary>
+    /// If true, logging will be added for ASP.NET.
+    /// </summary>
+    public bool AddAspNetLogging { get; set; } = false;
+
+    /// <summary>
     /// Instance of the health check state.
     /// </summary>
     private readonly HealthCheckState _healthCheckState = new HealthCheckState();
@@ -32,7 +37,10 @@ public class WebServer
         // Create the app builder with custom logging.
         var builder = WebApplication.CreateSlimBuilder();
         builder.Logging.ClearProviders();
-        builder.Logging.AddProvider(Logger.NexusLogger);
+        if (this.AddAspNetLogging)
+        {
+            builder.Logging.AddProvider(Logger.NexusLogger);
+        }
         prepareApplication.Invoke(builder);
         
         // Set up custom exception handling.
@@ -54,6 +62,7 @@ public class WebServer
         prepareApi.Invoke(app);
         
         // Run the server.
+        Logger.Info($"Serving on port {Port}.");
         await app.RunAsync($"http://localhost:{Port}");
     }
     
