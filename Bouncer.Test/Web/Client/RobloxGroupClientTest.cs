@@ -14,7 +14,7 @@ public class RobloxGroupClientTest
     public void SetUp()
     {
         _testHttpClient = new TestHttpClient();
-        _client = new RobloxGroupClient(_testHttpClient);
+        _client = new RobloxGroupClient(_testHttpClient, _testHttpClient);
     }
 
     [Test]

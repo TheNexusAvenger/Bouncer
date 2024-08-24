@@ -8,11 +8,6 @@ namespace Bouncer.Web.Client;
 public class RobloxGroupClient
 {
     /// <summary>
-    /// Instance of the Roblox group client.
-    /// </summary>
-    public static readonly RobloxGroupClient Instance = new RobloxGroupClient();
-    
-    /// <summary>
     /// Roblox Open Cloud client to non-caching send requests.
     /// </summary>
     private readonly RobloxOpenCloudClient _robloxClient;
@@ -34,16 +29,17 @@ public class RobloxGroupClient
     /// Creates a Roblox Group API client.
     /// </summary>
     /// <param name="httpClient">HTTP client to send requests with.</param>
-    public RobloxGroupClient(IHttpClient httpClient)
+    /// <param name="cachingHttpClient">Caching HTTP client to send requests with.</param>
+    public RobloxGroupClient(IHttpClient httpClient, IHttpClient cachingHttpClient)
     {
         this._robloxClient = new RobloxOpenCloudClient(httpClient);
-        this._cachingRobloxClient = new RobloxOpenCloudClient(new CachingHttpClient(httpClient));
+        this._cachingRobloxClient = new RobloxOpenCloudClient(cachingHttpClient);
     }
     
     /// <summary>
     /// Creates a Roblox Group API client.
     /// </summary>
-    public RobloxGroupClient() : this(new HttpClientImpl())
+    public RobloxGroupClient() : this(new HttpClientImpl(), CachingHttpClient.Instance)
     {
         
     }

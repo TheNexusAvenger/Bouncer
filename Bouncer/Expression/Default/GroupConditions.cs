@@ -7,13 +7,18 @@ namespace Bouncer.Expression.Default;
 public class GroupConditions
 {
     /// <summary>
+    /// Instance of the Roblox group client.
+    /// </summary>
+    private static readonly RobloxGroupClient RobloxGroupClient = new RobloxGroupClient();
+    
+    /// <summary>
     /// Condition for the Roblox user having a rank compared to the given rank in a Roblox group.
     /// </summary>
     public static bool GroupRankIsCondition(long robloxUserId, List<string> arguments) {
         var robloxGroupId = long.Parse(arguments[1]);
         var condition = arguments[2].ToLower();
         var rank = int.Parse(arguments[3]);
-        var groupRank = RobloxGroupClient.Instance.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result;
+        var groupRank = RobloxGroupClient.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result;
         if (condition == "equalto")
         {
             return groupRank == rank;
@@ -35,6 +40,6 @@ public class GroupConditions
     public static bool IsInGroupCondition(long robloxUserId, List<string> arguments)
     {
         var robloxGroupId = long.Parse(arguments[1]);
-        return RobloxGroupClient.Instance.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result > 0;
+        return RobloxGroupClient.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result > 0;
     }
 }

@@ -22,6 +22,11 @@ public class HttpClientCacheEntry
 public class CachingHttpClient : IHttpClient
 {
     /// <summary>
+    /// Static instance of a caching HTTP client.
+    /// </summary>
+    public static readonly CachingHttpClient Instance = new CachingHttpClient();
+    
+    /// <summary>
     /// Time to clear the cache.
     /// </summary>
     public TimeSpan CacheClearTime { get; set; }= TimeSpan.FromMinutes(5);
