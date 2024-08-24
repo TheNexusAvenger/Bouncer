@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
+using Bouncer.Web.Client.Request;
 using Bouncer.Web.Client.Response;
 using Bouncer.Web.Client.Shim;
 
@@ -28,6 +30,16 @@ public class RobloxOpenCloudClient
     {
         this._httpClient = httpClient;
     }
+    
+    /// <summary>
+    /// Clears the cache.
+    /// Only clears the cache if the HTTP client is caching.
+    /// </summary>
+    public async Task ClearCacheAsync()
+    {
+        if (this._httpClient is not CachingHttpClient cachingHttpClient) return;
+        await cachingHttpClient.ClearCacheAsync();
+    }
 
     /// <summary>
     /// Performs a request to Roblox Open Cloud.
@@ -35,12 +47,12 @@ public class RobloxOpenCloudClient
     /// <param name="httpMethod">HTTP method to send.</param>
     /// <param name="url">URL to request.</param>
     /// <param name="jsonResponseTypeInfo">JSON type information to deserialize the response.</param>
-    /// <typeparam name="T">Type of the response.</typeparam>
+    /// <param name="content">Content of the request.</param>
+    /// <typeparam name="TResponse">Type of the response.</typeparam>
     /// <returns>JSON response for the request.</returns>
-    public async Task<T> RequestAsync<T>(HttpMethod httpMethod, string url, JsonTypeInfo<T> jsonResponseTypeInfo) where T : BaseRobloxOpenCloudResponse
+    public async Task<TResponse> RequestAsync<TResponse>(HttpMethod httpMethod, string url, JsonTypeInfo<TResponse> jsonResponseTypeInfo, HttpContent? content = null) where TResponse : BaseRobloxOpenCloudResponse
     {
         // Perform the request.
-        // TODO: Request body for non-GET requests
         var request = new HttpRequestMessage()
         {
             RequestUri = new Uri(url),
@@ -50,36 +62,30 @@ public class RobloxOpenCloudClient
             },
             Method = httpMethod,
         };
+        if (content != null)
+        {
+            request.Content = content;
+        }
         var response = await this._httpClient.SendAsync(request);
         
         // Parse the response.
-        var responseObject = JsonSerializer.Deserialize<T>(response.Content, jsonResponseTypeInfo)!;
+        Console.WriteLine(response.Content);
+        var responseObject = JsonSerializer.Deserialize<TResponse>(response.Content, jsonResponseTypeInfo)!;
         responseObject.StatusCode = response.StatusCode;
         
         // Throw an exception if there was an API key error.
+        OpenCloudAccessIssue? accessIssue = null;
         if (responseObject.Code == "PERMISSION_DENIED" || responseObject.Code == "INSUFFICIENT_SCOPE")
         {
-            throw new OpenCloudAccessException<T>()
-            {
-                Issue = OpenCloudAccessIssue.PermissionDenied,
-                Response = responseObject,
-            };
+            accessIssue = OpenCloudAccessIssue.PermissionDenied;
         }
         else if (responseObject.Code == "UNAUTHENTICATED")
         {
-            throw new OpenCloudAccessException<T>()
-            {
-                Issue = OpenCloudAccessIssue.Unauthenticated,
-                Response = responseObject,
-            };
+            accessIssue = OpenCloudAccessIssue.Unauthenticated;
         }
         else if (responseObject.Code == "RESOURCE_EXHAUSTED")
         {
-            throw new OpenCloudAccessException<T>()
-            {
-                Issue = OpenCloudAccessIssue.TooManyRequests,
-                Response = responseObject,
-            };
+            accessIssue = OpenCloudAccessIssue.TooManyRequests;
         }
         if (responseObject.Errors != null)
         {
@@ -87,21 +93,33 @@ public class RobloxOpenCloudClient
             {
                 if (error.Message == "Missing API Key Header")
                 {
-                    throw new OpenCloudAccessException<T>()
-                    {
-                        Issue = OpenCloudAccessIssue.MissingApiKey,
-                        Response = responseObject,
-                    };
+                    accessIssue = OpenCloudAccessIssue.MissingApiKey;
                 }
                 else if (error.Message == "Invalid API Key")
                 {
-                    throw new OpenCloudAccessException<T>()
-                    {
-                        Issue = OpenCloudAccessIssue.InvalidApiKey,
-                        Response = responseObject,
-                    };
+                    accessIssue = OpenCloudAccessIssue.InvalidApiKey;
+                }
+                else if (error.Message == "The user is invalid or does not exist.")
+                {
+                    accessIssue = OpenCloudAccessIssue.InvalidUser;
+                }
+                else if (error.Message == "Too many requests")
+                {
+                    accessIssue = OpenCloudAccessIssue.TooManyRequests;
                 }
             }
+        }
+        if (accessIssue == null && (int) response.StatusCode >= 300)
+        {
+            accessIssue = OpenCloudAccessIssue.Unknown;
+        }
+        if (accessIssue != null)
+        {
+            throw new OpenCloudAccessException<TResponse>()
+            {
+                Issue = accessIssue.Value,
+                Response = responseObject,
+            };
         }
         
         // Return the response object.
@@ -113,10 +131,44 @@ public class RobloxOpenCloudClient
     /// </summary>
     /// <param name="url">URL to request.</param>
     /// <param name="jsonResponseTypeInfo">JSON type information to deserialize the response.</param>
-    /// <typeparam name="T">Type of the response.</typeparam>
+    /// <typeparam name="TResponse">Type of the response.</typeparam>
     /// <returns>JSON response for the request.</returns>
-    public Task<T> GetAsync<T>(string url, JsonTypeInfo<T> jsonResponseTypeInfo) where T : BaseRobloxOpenCloudResponse
+    public Task<TResponse> GetAsync<TResponse>(string url, JsonTypeInfo<TResponse> jsonResponseTypeInfo) where TResponse : BaseRobloxOpenCloudResponse
     {
         return this.RequestAsync(HttpMethod.Get, url, jsonResponseTypeInfo);
+    }
+
+    /// <summary>
+    /// Performs a POST request to Roblox Open Cloud.
+    /// </summary>
+    /// <param name="url">URL to request.</param>
+    /// <param name="jsonResponseTypeInfo">JSON type information to deserialize the response.</param>
+    /// <param name="content">Content of the request to send.</param>
+    /// <typeparam name="TResponse">Type of the response.</typeparam>
+    /// <returns>JSON response for the request.</returns>
+    public Task<TResponse> PostAsync<TResponse>(string url, JsonTypeInfo<TResponse> jsonResponseTypeInfo, HttpContent content) where TResponse : BaseRobloxOpenCloudResponse
+    {
+        return this.RequestAsync(HttpMethod.Post, url, jsonResponseTypeInfo, content);
+    }
+
+    /// <summary>
+    /// Performs a POST request to Roblox Open Cloud with an empty request body.
+    /// </summary>
+    /// <param name="url">URL to request.</param>
+    /// <param name="jsonResponseTypeInfo">JSON type information to deserialize the response.</param>
+    /// <typeparam name="TResponse">Type of the response.</typeparam>
+    /// <returns>JSON response for the request.</returns>
+    public Task<TResponse> PostAsync<TResponse>(string url, JsonTypeInfo<TResponse> jsonResponseTypeInfo) where TResponse : BaseRobloxOpenCloudResponse
+    {
+        return this.PostAsync(url, jsonResponseTypeInfo, JsonContent.Create(new EmptyRequest(), EmptyRequestJsonContext.Default.EmptyRequest));
+    }
+
+    /// <summary>
+    /// Performs a POST request to Roblox Open Cloud with an empty request body and no response.
+    /// </summary>
+    /// <param name="url">URL to request.</param>
+    public Task PostAsync(string url)
+    {
+        return this.PostAsync(url, BaseRobloxOpenCloudResponseJsonContext.Default.BaseRobloxOpenCloudResponse);
     }
 }

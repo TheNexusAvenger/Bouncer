@@ -30,6 +30,14 @@ public class CachingHttpClient : IHttpClient
     {
         this._httpClient = httpClient;
     }
+    
+    /// <summary>
+    /// Creates a caching HTTP client.
+    /// </summary>
+    public CachingHttpClient() : this(new HttpClientImpl())
+    {
+        
+    }
 
     /// <summary>
     /// Clears the cache.

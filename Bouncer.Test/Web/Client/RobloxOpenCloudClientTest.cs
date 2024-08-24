@@ -73,7 +73,7 @@ public class RobloxOpenCloudClientTest
     }
     
     [Test]
-    public void TestRequestAsyncInvalidUser()
+    public void TestRequestAsyncInvalidUsage()
     {
         this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/test", HttpStatusCode.Forbidden, "{\"code\":\"UNAUTHENTICATED\"}");
         var exception = Assert.Throws<AggregateException>(() =>
@@ -96,6 +96,45 @@ public class RobloxOpenCloudClientTest
         var openCloudException = (OpenCloudAccessException<BaseRobloxOpenCloudResponse>) exception.InnerException!;
         Assert.That(openCloudException.Issue, Is.EqualTo(OpenCloudAccessIssue.TooManyRequests));
         Assert.That(openCloudException.Response.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+    }
+    
+    [Test]
+    public void TestRequestAsyncTooManyRequestsAlt()
+    {
+        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/test", HttpStatusCode.Unauthorized, "{\"errors\":[{\"code\":0,\"message\":\"Too many requests\"}]}");
+        var exception = Assert.Throws<AggregateException>(() =>
+        {
+            this._client.RequestAsync(HttpMethod.Get, "https://apis.roblox.com/cloud/v2/test", BaseRobloxOpenCloudResponseJsonContext.Default.BaseRobloxOpenCloudResponse).Wait();
+        });
+        var openCloudException = (OpenCloudAccessException<BaseRobloxOpenCloudResponse>) exception.InnerException!;
+        Assert.That(openCloudException.Issue, Is.EqualTo(OpenCloudAccessIssue.TooManyRequests));
+        Assert.That(openCloudException.Response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+    }
+    
+    [Test]
+    public void TestRequestAsyncInvalidUser()
+    {
+        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/test", HttpStatusCode.Unauthorized, "{\"errors\":[{\"code\":0,\"message\":\"The user is invalid or does not exist.\"}]}");
+        var exception = Assert.Throws<AggregateException>(() =>
+        {
+            this._client.RequestAsync(HttpMethod.Get, "https://apis.roblox.com/cloud/v2/test", BaseRobloxOpenCloudResponseJsonContext.Default.BaseRobloxOpenCloudResponse).Wait();
+        });
+        var openCloudException = (OpenCloudAccessException<BaseRobloxOpenCloudResponse>) exception.InnerException!;
+        Assert.That(openCloudException.Issue, Is.EqualTo(OpenCloudAccessIssue.InvalidUser));
+        Assert.That(openCloudException.Response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+    }
+    
+    [Test]
+    public void TestRequestAsyncUnknown()
+    {
+        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/test", HttpStatusCode.InternalServerError, "{}");
+        var exception = Assert.Throws<AggregateException>(() =>
+        {
+            this._client.RequestAsync(HttpMethod.Get, "https://apis.roblox.com/cloud/v2/test", BaseRobloxOpenCloudResponseJsonContext.Default.BaseRobloxOpenCloudResponse).Wait();
+        });
+        var openCloudException = (OpenCloudAccessException<BaseRobloxOpenCloudResponse>) exception.InnerException!;
+        Assert.That(openCloudException.Issue, Is.EqualTo(OpenCloudAccessIssue.Unknown));
+        Assert.That(openCloudException.Response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
     }
     
     [Test]

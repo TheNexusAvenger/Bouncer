@@ -4,6 +4,7 @@ using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
 using Bouncer.State;
+using Bouncer.Web.Client;
 using Bouncer.Web.Server;
 
 namespace Bouncer;

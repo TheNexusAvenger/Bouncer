@@ -28,6 +28,16 @@ public enum OpenCloudAccessIssue
     /// Too many requests were sent.
     /// </summary>
     TooManyRequests,
+    
+    /// <summary>
+    /// An invalid Roblox user id was used.
+    /// </summary>
+    InvalidUser,
+    
+    /// <summary>
+    /// Unknown exception.
+    /// </summary>
+    Unknown,
 }
 
 public class OpenCloudAccessException<T> : Exception where T : BaseRobloxOpenCloudResponse
