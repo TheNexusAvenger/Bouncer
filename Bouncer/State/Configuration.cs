@@ -37,6 +37,11 @@ public class GroupConfiguration
     /// API key for Roblox Open Cloud.
     /// </summary>
     public string? OpenCloudApiKey { get; set; }
+
+    /// <summary>
+    /// If true, join requests will be read but not attempted.
+    /// </summary>
+    public bool DryRun { get; set; } = false;
     
     /// <summary>
     /// Rules to use for accepting or declining users.
@@ -85,6 +90,7 @@ public class Configuration
                     {
                         Id = 12345L,
                         OpenCloudApiKey = "ReplaceWithOpenCloudKey",
+                        DryRun = true,
                         Rules = new List<JoinRequestRuleEntry>
                         {
                             new JoinRequestRuleEntry()
