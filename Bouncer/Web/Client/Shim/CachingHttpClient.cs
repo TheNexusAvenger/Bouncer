@@ -1,12 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Bouncer.Web.Client.Shim;
 
+public class HttpClientCacheEntry
+{
+    /// <summary>
+    /// Task for the response.
+    /// </summary>
+    public Task<HttpStringResponseMessage> ResponseTask { get; set; } = null!;
+
+    /// <summary>
+    /// Time that the response was cached.
+    /// </summary>
+    public DateTime StartTime { get; set; }
+}
+
 public class CachingHttpClient : IHttpClient
 {
+    /// <summary>
+    /// Time to clear the cache.
+    /// </summary>
+    public TimeSpan CacheClearTime { get; set; }= TimeSpan.FromMinutes(5);
+    
     /// <summary>
     /// Base HTTP client to call.
     /// </summary>
@@ -15,7 +34,7 @@ public class CachingHttpClient : IHttpClient
     /// <summary>
     /// Cache for the GET requests.
     /// </summary>
-    private readonly Dictionary<string, Task<HttpStringResponseMessage>> _getRequestCache = new Dictionary<string, Task<HttpStringResponseMessage>>();
+    private readonly Dictionary<string, HttpClientCacheEntry> _getRequestCache = new Dictionary<string, HttpClientCacheEntry>();
 
     /// <summary>
     /// Semaphore for accessing and modifying the cache.
@@ -29,6 +48,27 @@ public class CachingHttpClient : IHttpClient
     public CachingHttpClient(IHttpClient httpClient)
     {
         this._httpClient = httpClient;
+        
+        // Clear cache entries in the background.
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                await this._cacheSemaphore.WaitAsync();
+                var urlsToRemove = new List<string>();
+                foreach (var (url, cacheEntry) in this._getRequestCache)
+                {
+                    if (DateTime.Now - cacheEntry.StartTime < this.CacheClearTime) continue;
+                    urlsToRemove.Add(url);
+                }
+                foreach (var url in urlsToRemove)
+                {
+                    this._getRequestCache.Remove(url);
+                }
+                this._cacheSemaphore.Release();
+                await Task.Delay(5000);
+            }
+        });
     }
     
     /// <summary>
@@ -68,10 +108,14 @@ public class CachingHttpClient : IHttpClient
         var requestUrl = request.RequestUri?.ToString() ?? "";
         if (!this._getRequestCache.ContainsKey(requestUrl))
         {
-            this._getRequestCache[requestUrl] = Task.Run(async () => await this._httpClient.SendAsync(request));
+            this._getRequestCache[requestUrl] = new HttpClientCacheEntry()
+            {
+                ResponseTask = Task.Run(async () => await this._httpClient.SendAsync(request)),
+                StartTime = DateTime.Now,
+            };
         }
-        var responseTask = this._getRequestCache[requestUrl];
+        var cachedResponse = this._getRequestCache[requestUrl];
         this._cacheSemaphore.Release();
-        return await responseTask;
+        return await cachedResponse.ResponseTask;
     }
 }
