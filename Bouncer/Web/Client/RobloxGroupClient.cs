@@ -8,6 +8,11 @@ namespace Bouncer.Web.Client;
 public class RobloxGroupClient
 {
     /// <summary>
+    /// Instance of the Roblox group client.
+    /// </summary>
+    public static readonly RobloxGroupClient Instance = new RobloxGroupClient();
+    
+    /// <summary>
     /// Roblox Open Cloud client to non-caching send requests.
     /// </summary>
     private readonly RobloxOpenCloudClient _robloxClient;

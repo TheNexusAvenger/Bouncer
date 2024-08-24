@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Bouncer.Expression.Default;
 using Bouncer.Expression.Definition;
 using Bouncer.Parser;
 using Bouncer.Parser.Model;
@@ -18,11 +18,40 @@ public class Condition
     /// </summary>
     private static readonly List<ConditionDefinition> ConditionDefinitions = new List<ConditionDefinition>()
     {
+        // Generic conditions.
         new ConditionDefinition()
         {
             Name = "ConditionGroup",
             TotalArguments = 0,
             Evaluate = (_, _) => true,
+        },
+        new ConditionDefinition()
+        {
+            Name = "Always",
+            TotalArguments = 0,
+            Evaluate = (_, _) => true,
+        },
+        new ConditionDefinition()
+        {
+            Name = "Never",
+            TotalArguments = 0,
+            Evaluate = (_, _) => false,
+        },
+        
+        // Group conditions.
+        new ConditionDefinition()
+        {
+            Name = "IsInGroup",
+            TotalArguments = 1,
+            FormatString = "User is in group {0}.",
+            Evaluate = GroupConditions.IsInGroupCondition,
+        },
+        new ConditionDefinition()
+        {
+            Name = "GroupRankIs",
+            TotalArguments = 3,
+            FormatString = "User a rank {1} {3} in group {0}.",
+            Evaluate = GroupConditions.GroupRankIsCondition,
         },
     };
 

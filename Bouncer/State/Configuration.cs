@@ -102,7 +102,7 @@ public class Configuration
                             new JoinRequestRuleEntry()
                             {
                                 Name = "Test Rule 3",
-                                Rule = "Default()",
+                                Rule = "Always()",
                                 Action = JoinRequestAction.Decline,
                             },
                         }
