@@ -45,7 +45,16 @@ public class OpenCloudAccessException : Exception
     /// <summary>
     /// Issue that caused the exception.
     /// </summary>
-    public OpenCloudAccessIssue Issue;
+    public readonly OpenCloudAccessIssue Issue;
+    
+    /// <summary>
+    /// Creates an Open Cloud access exception.
+    /// </summary>
+    /// <param name="issue">Issue for the exception.</param>
+    public OpenCloudAccessException(OpenCloudAccessIssue issue) : base(issue.ToString())
+    {
+        this.Issue = issue;
+    }
 }
 
 public class OpenCloudAccessException<T> : OpenCloudAccessException where T : BaseRobloxOpenCloudResponse
@@ -53,5 +62,16 @@ public class OpenCloudAccessException<T> : OpenCloudAccessException where T : Ba
     /// <summary>
     /// Response for the request.
     /// </summary>
-    public T Response = null!;
+    public readonly T Response;
+    
+    /// <summary>
+    /// Creates an Open Cloud access exception.
+    /// </summary>
+    /// <param name="issue">Issue for the exception.</param>
+    /// <param name="response">Response with the exception.</param>
+    /// <typeparam name="T">Type of the response.</typeparam>
+    public OpenCloudAccessException(OpenCloudAccessIssue issue, T response) : base(issue)
+    {
+        this.Response = response;
+    }
 }

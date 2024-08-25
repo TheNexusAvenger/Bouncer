@@ -130,11 +130,7 @@ public class RobloxOpenCloudClient
         }
         if (accessIssue != null)
         {
-            throw new OpenCloudAccessException<TResponse>()
-            {
-                Issue = accessIssue.Value,
-                Response = responseObject,
-            };
+            throw new OpenCloudAccessException<TResponse>(accessIssue.Value, responseObject);
         }
         
         // Return the response object.
