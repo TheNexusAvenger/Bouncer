@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine as runtime
 # Prepare the runtime.
 WORKDIR /app
 COPY --from=build /publish .
-RUN apk add icu-libs
+RUN apk add wget icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 RUN ln -s Bouncer.dll app.dll
 ENTRYPOINT ["dotnet", "/app/app.dll"]
