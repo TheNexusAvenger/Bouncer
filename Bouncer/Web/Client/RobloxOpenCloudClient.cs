@@ -69,7 +69,6 @@ public class RobloxOpenCloudClient
         var response = await this._httpClient.SendAsync(request);
         
         // Parse the response.
-        Console.WriteLine(response.Content);
         var responseObject = JsonSerializer.Deserialize<TResponse>(response.Content, jsonResponseTypeInfo)!;
         responseObject.StatusCode = response.StatusCode;
         

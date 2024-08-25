@@ -15,7 +15,7 @@ public class GroupConditions
     /// Condition for the Roblox user having a rank compared to the given rank in a Roblox group.
     /// </summary>
     public static bool GroupRankIsCondition(long robloxUserId, List<string> arguments) {
-        var robloxGroupId = long.Parse(arguments[1]);
+        var robloxGroupId = long.Parse(arguments[0]);
         var condition = arguments[2].ToLower();
         var rank = int.Parse(arguments[3]);
         var groupRank = RobloxGroupClient.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result;
@@ -39,7 +39,7 @@ public class GroupConditions
     /// </summary>
     public static bool IsInGroupCondition(long robloxUserId, List<string> arguments)
     {
-        var robloxGroupId = long.Parse(arguments[1]);
+        var robloxGroupId = long.Parse(arguments[0]);
         return RobloxGroupClient.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result > 0;
     }
 }
