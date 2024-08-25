@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -110,7 +111,22 @@ public class RobloxOpenCloudClient
         }
         if (accessIssue == null && (int) response.StatusCode >= 300)
         {
-            accessIssue = OpenCloudAccessIssue.Unknown;
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                accessIssue = OpenCloudAccessIssue.TooManyRequests;
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                accessIssue = OpenCloudAccessIssue.InvalidApiKey;
+            }
+            else if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                accessIssue = OpenCloudAccessIssue.Unauthenticated;
+            }
+            else
+            {
+                accessIssue = OpenCloudAccessIssue.Unknown;
+            }
         }
         if (accessIssue != null)
         {
