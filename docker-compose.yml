@@ -1,0 +1,11 @@
+services:
+  bouncer:
+    container_name: Bouncer
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+     - CONFIGURATION_FILE_LOCATION=/configuration/configuration.json
+    volumes:
+      - ./configuration:/configuration

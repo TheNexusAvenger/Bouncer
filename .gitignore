@@ -5,6 +5,7 @@
 
 # Project-specific
 configuration/
+docker-compose.override.yml
 
 # Luau
 sourcemap.json
