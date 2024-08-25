@@ -172,7 +172,7 @@ public class GroupJoinRequestLoop : BaseLoop
                             Logger.Info($"{logPrefix}User {robloxUserId} matched rule \"{rule.Name}\" for group {this.RobloxGroupId} and will be accepted.");
                             if (!this.DryRun)
                             {
-                                await this._robloxGroupClient.AcceptJoinRequestAsync(robloxUserId, this.RobloxGroupId);
+                                await this._robloxGroupClient.AcceptJoinRequestAsync(this.RobloxGroupId, robloxUserId);
                             }
                             acceptedJoinRequests += 1;
                         }
@@ -181,7 +181,7 @@ public class GroupJoinRequestLoop : BaseLoop
                             Logger.Info($"{logPrefix}User {robloxUserId} matched rule \"{rule.Name}\" for group {this.RobloxGroupId} and will be declined.");
                             if (!this.DryRun)
                             {
-                                await this._robloxGroupClient.DeclineJoinRequestAsync(robloxUserId, this.RobloxGroupId);
+                                await this._robloxGroupClient.DeclineJoinRequestAsync(this.RobloxGroupId, robloxUserId);
                             }
                             declinedJoinRequests += 1;
                         }
