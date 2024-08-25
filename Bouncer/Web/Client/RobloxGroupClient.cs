@@ -87,7 +87,7 @@ public class RobloxGroupClient
     /// </summary>
     /// <param name="robloxGroupId">Roblox group id to accept the join request of.</param>
     /// <param name="robloxUserId">Roblox user id of the join request to accept.</param>
-    public async Task AcceptJoinRequest(long robloxGroupId, long robloxUserId)
+    public async Task AcceptJoinRequestAsync(long robloxGroupId, long robloxUserId)
     {
         var url = $"https://apis.roblox.com/cloud/v2/groups/{robloxGroupId}/join-requests/{robloxUserId}:accept";
         await this._robloxClient.PostAsync(url);
@@ -98,7 +98,7 @@ public class RobloxGroupClient
     /// </summary>
     /// <param name="robloxGroupId">Roblox group id to decline the join request of.</param>
     /// <param name="robloxUserId">Roblox user id of the join request to decline.</param>
-    public async Task DeclineJoinRequest(long robloxGroupId, long robloxUserId)
+    public async Task DeclineJoinRequestAsync(long robloxGroupId, long robloxUserId)
     {
         var url = $"https://apis.roblox.com/cloud/v2/groups/{robloxGroupId}/join-requests/{robloxUserId}:decline";
         await this._robloxClient.PostAsync(url);
