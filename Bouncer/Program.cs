@@ -4,6 +4,7 @@ using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
 using Bouncer.State;
+using Bouncer.State.Loop;
 using Bouncer.Web.Server;
 
 namespace Bouncer;
@@ -45,6 +46,10 @@ public class Program
             await Logger.WaitForCompletionAsync();
             Environment.Exit(-(result.TotalRuleConfigurationErrors + result.TotalParseErrors + result.TotalTransformErrors));
         }
+        
+        // Start the group join loops.
+        var groupJoinRequestLoopCollection = new GroupJoinRequestLoopCollection();
+        // TODO: Pass into health check.
         
         // Run the server.
         await new WebServer().StartAsync();

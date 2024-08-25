@@ -42,6 +42,11 @@ public class GroupConfiguration
     /// If true, join requests will be read but not attempted.
     /// </summary>
     public bool DryRun { get; set; } = false;
+
+    /// <summary>
+    /// Time (in seconds) between running steps of the join request loop.
+    /// </summary>
+    public ulong LoopDelaySeconds = 5 * 60;
     
     /// <summary>
     /// Rules to use for accepting or declining users.
