@@ -53,6 +53,15 @@ public class Condition
             FormatString = "User a rank {1} {3} in group {0}.",
             Evaluate = GroupConditions.GroupRankIsCondition,
         },
+        
+        // User conditions.
+        new ConditionDefinition()
+        {
+            Name = "IsUser",
+            TotalArguments = 1,
+            FormatString = "User is {0}.",
+            Evaluate = UserConditions.IsInGroupCondition,
+        },
     };
 
     /// <summary>
