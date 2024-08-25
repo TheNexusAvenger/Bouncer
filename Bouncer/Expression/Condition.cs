@@ -50,7 +50,7 @@ public class Condition
         {
             Name = "GroupRankIs",
             TotalArguments = 3,
-            FormatString = "User a rank {1} {3} in group {0}.",
+            FormatString = "User a rank {1} {2} in group {0}.",
             Evaluate = GroupConditions.GroupRankIsCondition,
         },
         
