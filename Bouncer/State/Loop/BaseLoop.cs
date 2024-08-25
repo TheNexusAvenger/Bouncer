@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
 
-namespace Bouncer.State;
+namespace Bouncer.State.Loop;
 
 public abstract class BaseLoop
 {
@@ -37,13 +37,21 @@ public abstract class BaseLoop
     }
 
     /// <summary>
+    /// Stops the current loop.
+    /// </summary>
+    public void Stop()
+    {
+        this._loopCancellationToken?.Cancel();
+    }
+
+    /// <summary>
     /// Starts or restarts the loop.
     /// </summary>
     /// <param name="delaySeconds">Delay (in seconds) to perform the loop.</param>
     public void Start(ulong delaySeconds)
     {
         // Stop the current loop.
-        this._loopCancellationToken?.Cancel();
+        this.Stop();
         
         // Run the loop in the background.
         var newLoopCancellationToken = new CancellationTokenSource();
@@ -78,8 +86,15 @@ public abstract class BaseLoop
         var _ = Task.Run(async () =>
         {
             Logger.Debug($"Running step in loop \"{this.Name}\"");
-            await this.RunAsync();
-            Logger.Debug($"Completed step in loop \"{this.Name}\"");
+            try
+            {
+                await this.RunAsync();
+                Logger.Debug($"Completed step in loop \"{this.Name}\"");
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error occured in \"{this.Name}\" step.\n{e}");
+            }
             await this._semaphoreSlim.WaitAsync();
             this._stepRunning = false;
             this._semaphoreSlim.Release();
