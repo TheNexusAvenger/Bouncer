@@ -203,7 +203,7 @@ public class GroupJoinRequestLoop : BaseLoop
                 }
                 
                 // Stop the loop if there are no more join requests.
-                if (joinRequests.NextPageToken == null)
+                if (string.IsNullOrEmpty(joinRequests.NextPageToken))
                 {
                     break;
                 }
@@ -213,7 +213,7 @@ public class GroupJoinRequestLoop : BaseLoop
                 joinRequests = await this._robloxGroupClient.GetJoinRequests(this.RobloxGroupId, pageToken: pageToken);
                 if (pageToken == joinRequests.NextPageToken) // TODO: Roblox bug? https://devforum.roblox.com/t/open-cloud-groups-api-users-api-beta/2909090/38
                 {
-                    throw new InvalidDataException("Duplicate next page token returned for group join requests.");
+                    throw new InvalidDataException($"Duplicate next page token returned for group join requests ({pageToken}).");
                 }
             }
             Logger.Info($"Reached end of join requests for {this.RobloxGroupId}.");
