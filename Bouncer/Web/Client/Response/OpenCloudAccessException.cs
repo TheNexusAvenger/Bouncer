@@ -40,13 +40,16 @@ public enum OpenCloudAccessIssue
     Unknown,
 }
 
-public class OpenCloudAccessException<T> : Exception where T : BaseRobloxOpenCloudResponse
+public class OpenCloudAccessException : Exception
 {
     /// <summary>
     /// Issue that caused the exception.
     /// </summary>
     public OpenCloudAccessIssue Issue;
+}
 
+public class OpenCloudAccessException<T> : OpenCloudAccessException where T : BaseRobloxOpenCloudResponse
+{
     /// <summary>
     /// Response for the request.
     /// </summary>
