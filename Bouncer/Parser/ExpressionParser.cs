@@ -208,7 +208,7 @@ public static class ExpressionParser
     /// </summary>
     public static readonly Parser<ParsedCondition> OperatedGroupedExpressionParser = (from invertOperator in ExpressionParser.UnaryOperatorParser
         from conditionExpression in Parse.Ref(() => OperatedGroupedExpressionParser)
-        select conditionExpression.AddOperator(invertOperator)).XOr(ExpressionParser.GroupedExpressionParser);
+        select conditionExpression.AddOperator(invertOperator)).Or(ExpressionParser.GroupedExpressionParser);
     #endregion
     
     #region Input Parsers
