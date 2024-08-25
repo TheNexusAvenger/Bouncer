@@ -16,8 +16,8 @@ public class GroupConditions
     /// </summary>
     public static bool GroupRankIsCondition(long robloxUserId, List<string> arguments) {
         var robloxGroupId = long.Parse(arguments[0]);
-        var condition = arguments[2].ToLower();
-        var rank = int.Parse(arguments[3]);
+        var condition = arguments[1].ToLower();
+        var rank = int.Parse(arguments[2]);
         var groupRank = RobloxGroupClient.GetRankInGroupAsync(robloxUserId, robloxGroupId).Result;
         if (condition == "equalto")
         {
