@@ -21,6 +21,7 @@ public class Logger
         IncludeDate = true,
         NamespaceWhitelist = new List<string>() { "Bouncer" },
         MinimumLevel = LogLevel.Information,
+        DefaultLineWidth = 200,
     };
     
     /// <summary>
