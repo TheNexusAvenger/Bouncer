@@ -27,7 +27,7 @@ public class GroupJoinRequestLoopTest
     public void TestRunAsyncAccept()
     {
         this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/12345/join-requests?maxPageSize=20", HttpStatusCode.OK, "{\"groupJoinRequests\":[{\"user\":\"users/123\"}]}");
-        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/123/join-requests/12345:accept", HttpStatusCode.NoContent, "{}");
+        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/12345/join-requests/123:accept", HttpStatusCode.NoContent, "{}");
         this._loop.SetRules(new List<JoinRequestRuleEntry>()
         {
             new JoinRequestRuleEntry() {
@@ -43,7 +43,7 @@ public class GroupJoinRequestLoopTest
     public void TestRunAsyncDecline()
     {
         this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/12345/join-requests?maxPageSize=20", HttpStatusCode.OK, "{\"groupJoinRequests\":[{\"user\":\"users/123\"}]}");
-        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/123/join-requests/12345:decline", HttpStatusCode.NoContent, "{}");
+        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/12345/join-requests/123:decline", HttpStatusCode.NoContent, "{}");
         this._loop.SetRules(new List<JoinRequestRuleEntry>()
         {
             new JoinRequestRuleEntry() {
