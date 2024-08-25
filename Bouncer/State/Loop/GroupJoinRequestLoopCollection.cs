@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bouncer.Diagnostic;
+using Bouncer.Web.Server.Model;
 
 namespace Bouncer.State.Loop;
 
@@ -76,5 +77,29 @@ public class GroupJoinRequestLoopCollection
     public void Refresh()
     {
         this.Refresh(ConfigurationState.Configuration);
+    }
+
+    /// <summary>
+    /// Returns the status of the loops.
+    /// </summary>
+    /// <returns>The status of the loops.</returns>
+    public List<HealthCheckGroupLoopStatus> GetStatus()
+    {
+        var loopStatuses = new List<HealthCheckGroupLoopStatus>();
+        foreach (var (groupId, loop) in this._groupJoinRequestLoops)
+        {
+            var healthCheckStatus = HealthCheckResultStatus.Up;
+            if (loop.Status == GroupJoinRequestLoopStatus.InvalidApiKey || loop.Status == GroupJoinRequestLoopStatus.Error)
+            {
+                healthCheckStatus = HealthCheckResultStatus.Down;
+            }
+            loopStatuses.Add(new HealthCheckGroupLoopStatus()
+            {
+                Status = healthCheckStatus,
+                GroupId = groupId,
+                LastStepStatus = loop.Status,
+            });
+        }
+        return loopStatuses;
     }
 }

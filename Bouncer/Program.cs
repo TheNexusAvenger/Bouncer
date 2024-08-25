@@ -49,9 +49,8 @@ public class Program
         
         // Start the group join loops.
         var groupJoinRequestLoopCollection = new GroupJoinRequestLoopCollection();
-        // TODO: Pass into health check.
         
         // Run the server.
-        await new WebServer().StartAsync();
+        await new WebServer().StartAsync(groupJoinRequestLoopCollection);
     }
 }

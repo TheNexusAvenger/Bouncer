@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Bouncer.State.Loop;
 
 namespace Bouncer.Web.Server.Model;
 
@@ -32,6 +34,26 @@ public class HealthCheckConfigurationProblems
     public int TotalRuleTransformErrors { get; set; } = 0;
 }
 
+public class HealthCheckGroupLoopStatus
+{
+    /// <summary>
+    /// Status of the health check for the loop.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public HealthCheckResultStatus Status { get; set; } = HealthCheckResultStatus.Up;
+    
+    /// <summary>
+    /// Id of the group.
+    /// </summary>
+    public long GroupId { get; set; }
+    
+    /// <summary>
+    /// Status of the last step of the group loop.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public GroupJoinRequestLoopStatus LastStepStatus { get; set; } = GroupJoinRequestLoopStatus.NotStarted;
+}
+
 public class HealthCheckResult
 {
     /// <summary>
@@ -44,6 +66,11 @@ public class HealthCheckResult
     /// Summary of the health check for the configuration.
     /// </summary>
     public HealthCheckConfigurationProblems Configuration { get; set; } = new HealthCheckConfigurationProblems();
+    
+    /// <summary>
+    /// Summary of the health check for the loops.
+    /// </summary>
+    public List<HealthCheckGroupLoopStatus>? GroupJoinRequestLoops { get; set; } = new List<HealthCheckGroupLoopStatus>();
 }
 
 [JsonSerializable(typeof(HealthCheckResult))]

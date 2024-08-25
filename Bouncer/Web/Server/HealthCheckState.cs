@@ -1,12 +1,19 @@
-﻿using Bouncer.Diagnostic;
+﻿using System.Linq;
+using Bouncer.Diagnostic;
 using Bouncer.Diagnostic.Model;
 using Bouncer.State;
+using Bouncer.State.Loop;
 using Bouncer.Web.Server.Model;
 
 namespace Bouncer.Web.Server;
 
 public class HealthCheckState
 {
+    /// <summary>
+    /// Group join request loop collection to include in the health check.
+    /// </summary>
+    public GroupJoinRequestLoopCollection? GroupJoinRequestLoopCollection { get; set; }
+    
     /// <summary>
     /// Last result for the rules being verified.
     /// </summary>
@@ -34,9 +41,18 @@ public class HealthCheckState
         var hasConfigurationIssues = (verifyRulesResult.TotalRuleConfigurationErrors != 0 ||
                                       verifyRulesResult.TotalParseErrors != 0 ||
                                       verifyRulesResult.TotalTransformErrors != 0);
+        var loopStatuses = this.GroupJoinRequestLoopCollection?.GetStatus();
+        var hasLoopIssue = false;
+        if (loopStatuses != null)
+        {
+            if (loopStatuses.Any(status => status.Status != HealthCheckResultStatus.Up))
+            {
+                hasLoopIssue = true;
+            }
+        }
         return new HealthCheckResult()
         {
-            Status = (hasConfigurationIssues ? HealthCheckResultStatus.Down : HealthCheckResultStatus.Up),
+            Status = ((hasLoopIssue || hasConfigurationIssues) ? HealthCheckResultStatus.Down : HealthCheckResultStatus.Up),
             Configuration = new HealthCheckConfigurationProblems()
             {
                 Status = (hasConfigurationIssues ? HealthCheckResultStatus.Down : HealthCheckResultStatus.Up),
@@ -44,6 +60,7 @@ public class HealthCheckState
                 TotalRuleParseErrors = verifyRulesResult.TotalParseErrors,
                 TotalRuleTransformErrors = verifyRulesResult.TotalTransformErrors,
             },
+            GroupJoinRequestLoops = loopStatuses,
         };
     }
 

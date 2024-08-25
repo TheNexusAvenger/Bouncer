@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
+using Bouncer.State.Loop;
 using Bouncer.Web.Server.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -21,11 +22,6 @@ public class WebServer
     /// If true, logging will be added for ASP.NET.
     /// </summary>
     public bool AddAspNetLogging { get; set; } = false;
-
-    /// <summary>
-    /// Instance of the health check state.
-    /// </summary>
-    private readonly HealthCheckState _healthCheckState = new HealthCheckState();
 
     /// <summary>
     /// Starts the web server.
@@ -69,8 +65,13 @@ public class WebServer
     /// <summary>
     /// Starts the web server.
     /// </summary>
-    public async Task StartAsync()
+    /// <param name="groupJoinRequestLoopCollection">Group join request loop collection to include in the health check.</param>
+    public async Task StartAsync(GroupJoinRequestLoopCollection groupJoinRequestLoopCollection)
     {
+        var healthCheckState = new HealthCheckState()
+        {
+            GroupJoinRequestLoopCollection = groupJoinRequestLoopCollection,
+        };
         await this.StartAsync((builder) =>
         {
             // Add the JSON serializers.
@@ -82,7 +83,7 @@ public class WebServer
             // Build the API.
             app.MapGet("/health", () =>
             {
-                var healthCheckResult = _healthCheckState.GetHealthCheckResult();
+                var healthCheckResult = healthCheckState.GetHealthCheckResult();
                 var statusCode = (healthCheckResult.Status == HealthCheckResultStatus.Up ? 200 : 503);
                 return Results.Json(healthCheckResult, statusCode: statusCode);
             });
