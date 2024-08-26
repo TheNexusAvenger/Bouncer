@@ -25,7 +25,7 @@ public class GroupConditions
         }
         else if (condition == "lessthan")
         {
-            return groupRank < rank;
+            return groupRank > 0 && groupRank < rank;
         }
         else if (condition == "greaterthan")
         {
