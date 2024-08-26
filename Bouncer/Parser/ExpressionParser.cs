@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Bouncer.Expression;
 using Bouncer.Parser.Model;
 using Sprache;
 
@@ -147,20 +149,38 @@ public static class ExpressionParser
     
     #region Operator Parsers
     /// <summary>
+    /// Parser for a unary operator word.
+    /// Condition.UnaryOperations is allowed to change at runtime.
+    /// </summary>
+    public static readonly Parser<string> UnaryOperatorWordParser = (input) =>
+    {
+        return Condition.UnaryOperations.Select(keyword => Parse.IgnoreCase(keyword).Text())
+            .Aggregate((current, next) => current.Or(next)).Invoke(input);
+    };
+    
+    /// <summary>
     /// Parser for a unary operator (ex: not).
-    /// TODO: Avoid hard-coding not?
     /// </summary>
     public static readonly Parser<string> UnaryOperatorParser = from leadingWhitespace in Parse.WhiteSpace.Many()
-        from operationText in Parse.IgnoreCase("not").Text()
+        from operationText in UnaryOperatorWordParser.Text()
         from trailingWhitespace in Parse.WhiteSpace.Many()
         select operationText;
+
+    /// <summary>
+    /// Parser for a binary operator word.
+    /// Condition.BinaryOperations is allowed to change at runtime.
+    /// </summary>
+    public static readonly Parser<string> BinaryOperatorWordParser = (input) =>
+    {
+        return Condition.BinaryOperations.Select(keyword => Parse.IgnoreCase(keyword).Text())
+            .Aggregate((current, next) => current.Or(next)).Invoke(input);
+    };
     
     /// <summary>
     /// Parser for a binary operator (ex: and, or, nand, nor, xor).
-    /// TODO: Avoid hard-coding and/or?
     /// </summary>
     public static readonly Parser<string> BinaryOperatorParser = from leadingWhitespace in Parse.WhiteSpace.Many()
-        from operationText in Parse.IgnoreCase("and").Or(Parse.IgnoreCase("or")).Text()
+        from operationText in BinaryOperatorWordParser
         from trailingWhitespace in Parse.WhiteSpace.Many()
         select operationText;
     #endregion

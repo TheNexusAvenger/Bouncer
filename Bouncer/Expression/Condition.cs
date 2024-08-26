@@ -91,7 +91,27 @@ public class Condition
             Name = "and",
             Evaluate = (value1, condition2) => value1 && condition2(),
         },
+        new BinaryOperationDefinition()
+        {
+            Name = "==",
+            Evaluate = (value1, condition2) => value1 == condition2(),
+        },
+        new BinaryOperationDefinition()
+        {
+            Name = "!=",
+            Evaluate = (value1, condition2) => value1 != condition2(),
+        },
     };
+    
+    /// <summary>
+    /// List of the unary operation names.
+    /// </summary>
+    public static IEnumerable<string> UnaryOperations => UnaryOperationDefinitions.Select(operation => operation.Name);
+    
+    /// <summary>
+    /// List of the binary operation names.
+    /// </summary>
+    public static IEnumerable<string> BinaryOperations => BinaryOperationDefinitions.Select(operation => operation.Name);
 
     /// <summary>
     /// Semaphore for adding new definitions.
