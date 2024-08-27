@@ -39,6 +39,15 @@ public class Logger
     {
         ConsoleOutput.MinimumLevel = logLevel;
     }
+
+    /// <summary>
+    /// Adds a namespace to the whitelist for logging.
+    /// </summary>
+    /// <param name="namespaceValue">Namespace to add to the whitelist.</param>
+    public static void AddNamespaceWhitelist(string namespaceValue)
+    {
+        ConsoleOutput.NamespaceWhitelist.Add(namespaceValue);
+    }
     
     /// <summary>
     /// Logs a message as a Trace level.
