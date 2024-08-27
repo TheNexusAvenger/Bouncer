@@ -19,7 +19,7 @@ public class GroupJoinRequestLoopCollection
     public GroupJoinRequestLoopCollection()
     {
         // Connect the configuration changing.
-        ConfigurationState.ConfigurationChanged += (_) =>
+        Configurations.GetConfigurationState<Configuration>().ConfigurationChanged += (_) =>
         {
             this.Refresh();
         };
@@ -76,7 +76,7 @@ public class GroupJoinRequestLoopCollection
     /// </summary>
     public void Refresh()
     {
-        this.Refresh(ConfigurationState.Configuration);
+        this.Refresh(Configurations.GetConfiguration<Configuration>());
     }
 
     /// <summary>

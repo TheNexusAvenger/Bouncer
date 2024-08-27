@@ -1,32 +1,33 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Bouncer.Diagnostic;
 
 namespace Bouncer.State;
 
-public class ConfigurationState
+public class ConfigurationState<T>
 {
-    /// <summary>
-    /// Static instance of the configuration state.
-    /// </summary>
-    public static readonly ConfigurationState Instance = new ConfigurationState();
-
-    /// <summary>
-    /// Loaded configuration instance.
-    /// </summary>
-    public static Configuration Configuration => Instance.CurrentConfiguration;
-
     /// <summary>
     /// Event for the configuration changing.
     /// </summary>
-    public static event Action<Configuration>? ConfigurationChanged;
+    public event Action<T>? ConfigurationChanged;
     
     /// <summary>
     /// Loaded configuration instance of the state.
     /// </summary>
-    public Configuration CurrentConfiguration { get; private set; } = null!;
+    public T? CurrentConfiguration { get; private set; }
+
+    /// <summary>
+    /// JSON type information for the configuration.
+    /// </summary>
+    private readonly JsonTypeInfo<T> _configurationJsonType;
+
+    /// <summary>
+    /// Default configuration to store when no configuration file exists.
+    /// </summary>
+    private readonly T _defaultConfiguration;
 
     /// <summary>
     /// Last configuration as JSON.
@@ -36,9 +37,13 @@ public class ConfigurationState
     /// <summary>
     /// Creates a configuration state.
     /// </summary>
-    private ConfigurationState()
+    /// <param name="defaultConfiguration">Default configuration to store when no configuration file exists.</param>
+    /// <param name="configurationJsonType">JSON type information for the configuration.</param>
+    public ConfigurationState(T defaultConfiguration, JsonTypeInfo<T> configurationJsonType)
     {
         // Load the initial configuration.
+        this._defaultConfiguration = defaultConfiguration;
+        this._configurationJsonType = configurationJsonType;
         this.ReloadAsync().Wait();
         
         // Set up file change notifications.
@@ -74,19 +79,26 @@ public class ConfigurationState
     /// </summary>
     public async Task ReloadAsync()
     {
+        // Prepare the configuration if it doesn't exist.
+        var path = GetConfigurationPath();
+        if (!File.Exists(path))
+        {
+            await File.WriteAllTextAsync(path, JsonSerializer.Serialize(this._defaultConfiguration, this._configurationJsonType));
+        }
+        
         // Read the configuration.
         Logger.Trace("Attempting to read new configuration.");
-        this.CurrentConfiguration = await Configuration.ReadConfigurationAsync();
+        var configurationContents = await File.ReadAllTextAsync(path);
+        this.CurrentConfiguration = JsonSerializer.Deserialize<T>(configurationContents, this._configurationJsonType)!;
         Logger.Trace("Read new configuration.");
         
         // Invoke the changed event if the contents changed.
-        var newConfigurationJson = JsonSerializer.Serialize(this.CurrentConfiguration, ConfigurationJsonContext.Default.Configuration);
-        if (this._lastConfiguration != null && this._lastConfiguration != newConfigurationJson)
+        if (this._lastConfiguration != null && this._lastConfiguration != configurationContents)
         {
             Logger.Debug("Configuration updated.");
             ConfigurationChanged?.Invoke(this.CurrentConfiguration);
         }
-        this._lastConfiguration = newConfigurationJson;
+        this._lastConfiguration = configurationContents;
     }
 
     /// <summary>

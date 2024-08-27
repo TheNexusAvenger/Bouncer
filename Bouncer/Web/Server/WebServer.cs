@@ -72,6 +72,7 @@ public class WebServer
         {
             GroupJoinRequestLoopCollection = groupJoinRequestLoopCollection,
         };
+        healthCheckState.ConnectConfigurationChanges();
         await this.StartAsync((builder) =>
         {
             // Add the JSON serializers.

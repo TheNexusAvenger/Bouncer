@@ -109,6 +109,6 @@ public class ConfigurationVerification
     /// </summary>
     public static VerifyRulesResult VerifyRules()
     {
-        return VerifyRules(ConfigurationState.Configuration);
+        return VerifyRules(Configurations.GetConfiguration<Configuration>());
     }
 }

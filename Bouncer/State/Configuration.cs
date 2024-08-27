@@ -76,52 +76,44 @@ public class Configuration
     public LoggingConfiguration Logging { get; set; } = new LoggingConfiguration();
 
     /// <summary>
-    /// Reads the configuration from the file system.
+    /// Returns the default configuration to use if the configuration file doesn't exist.
     /// </summary>
-    /// <returns>Configuration that was read, or the default one.</returns>
-    public static async Task<Configuration> ReadConfigurationAsync()
+    /// <returns>Default configuration to store.</returns>
+    public static Configuration GetDefaultConfiguration()
     {
-        // Get the configuration path.
-        var path = ConfigurationState.GetConfigurationPath();
-        
-        // Write the configuration if it doesn't exist and then load the configuration.
-        if (!File.Exists(path))
+        return new Configuration()
         {
-            await File.WriteAllTextAsync(path, JsonSerializer.Serialize(new Configuration()
+            Groups = new List<GroupConfiguration>()
             {
-                Groups = new List<GroupConfiguration>()
+                new GroupConfiguration()
                 {
-                    new GroupConfiguration()
+                    Id = 12345L,
+                    OpenCloudApiKey = "ReplaceWithOpenCloudKey",
+                    DryRun = true,
+                    Rules = new List<JoinRequestRuleEntry>
                     {
-                        Id = 12345L,
-                        OpenCloudApiKey = "ReplaceWithOpenCloudKey",
-                        DryRun = true,
-                        Rules = new List<JoinRequestRuleEntry>
+                        new JoinRequestRuleEntry()
                         {
-                            new JoinRequestRuleEntry()
-                            {
-                                Name = "Test Rule 1",
-                                Rule = "IsInGroup(12345) and not IsInGroup(23456)",
-                                Action = JoinRequestAction.Accept,
-                            },
-                            new JoinRequestRuleEntry()
-                            {
-                                Name = "Test Rule 2",
-                                Rule = "IsInGroup(23456)",
-                                Action = JoinRequestAction.Ignore,
-                            },
-                            new JoinRequestRuleEntry()
-                            {
-                                Name = "Test Rule 3",
-                                Rule = "Always()",
-                                Action = JoinRequestAction.Decline,
-                            },
-                        }
-                    },
+                            Name = "Test Rule 1",
+                            Rule = "IsInGroup(12345) and not IsInGroup(23456)",
+                            Action = JoinRequestAction.Accept,
+                        },
+                        new JoinRequestRuleEntry()
+                        {
+                            Name = "Test Rule 2",
+                            Rule = "IsInGroup(23456)",
+                            Action = JoinRequestAction.Ignore,
+                        },
+                        new JoinRequestRuleEntry()
+                        {
+                            Name = "Test Rule 3",
+                            Rule = "Always()",
+                            Action = JoinRequestAction.Decline,
+                        },
+                    }
                 },
-            }, ConfigurationJsonContext.Default.Configuration));
-        }
-        return JsonSerializer.Deserialize<Configuration>(await File.ReadAllTextAsync(path), ConfigurationJsonContext.Default.Configuration)!;
+            },
+        };
     }
 }
 

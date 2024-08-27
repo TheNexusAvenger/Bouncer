@@ -35,7 +35,9 @@ public class Program
     private static async Task RunApplicationAsync(InvocationContext invocationContext)
     {
         // Set the minimum log level.
-        var minimumLogLevel = ConfigurationState.Configuration.Logging.MinimumLogLevel;
+        Configurations.PrepareConfiguration(Configuration.GetDefaultConfiguration(), ConfigurationJsonContext.Default.Configuration);
+        var configuration = Configurations.GetConfiguration<Configuration>();
+        var minimumLogLevel = configuration.Logging.MinimumLogLevel;
         Logger.SetMinimumLogLevel(minimumLogLevel);
         Logger.Debug($"Set log level to {minimumLogLevel}.");
         

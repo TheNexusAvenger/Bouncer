@@ -17,18 +17,18 @@ public class HealthCheckState
     /// <summary>
     /// Last result for the rules being verified.
     /// </summary>
-    private VerifyRulesResult _lastVerifyRulesResult;
+    private VerifyRulesResult? _lastVerifyRulesResult;
 
     /// <summary>
-    /// Creates a health check state.
+    /// Connects the configuration changing.
     /// </summary>
-    public HealthCheckState()
+    public void ConnectConfigurationChanges()
     {
         // Set the initial health check values.
         this._lastVerifyRulesResult = ConfigurationVerification.VerifyRules();
         
         // Connect the configuration changing.
-        ConfigurationState.ConfigurationChanged += (_) => this.UpdateVerifyRulesResult();
+        Configurations.GetConfigurationState<Configuration>().ConfigurationChanged += (_) => this.UpdateVerifyRulesResult();
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class HealthCheckState
     /// <returns>The current health check result.</returns>
     public HealthCheckResult GetHealthCheckResult()
     {
-        return this.GetHealthCheckResult(this._lastVerifyRulesResult);
+        return this.GetHealthCheckResult(this._lastVerifyRulesResult!);
     }
     
     /// <summary>
