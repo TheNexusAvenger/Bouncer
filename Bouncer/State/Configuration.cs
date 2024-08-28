@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Bouncer.State;
 
-public class JoinRequestRuleEntry
+public class BaseRuleEntry<T>
 {
     /// <summary>
     /// Optional name of the role.
@@ -15,7 +12,7 @@ public class JoinRequestRuleEntry
     public string? Name { get; set; }
     
     /// <summary>
-    /// Rule for the 
+    /// Rule for the action.
     /// </summary>
     public string? Rule { get; set; }
     
@@ -23,7 +20,12 @@ public class JoinRequestRuleEntry
     /// Action to perform when the rule applies.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public JoinRequestAction? Action { get; set; }
+    public T? Action { get; set; }
+}
+
+public class JoinRequestRuleEntry : BaseRuleEntry<JoinRequestAction?>
+{
+    
 }
 
 public class GroupConfiguration
