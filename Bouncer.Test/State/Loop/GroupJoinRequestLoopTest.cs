@@ -20,7 +20,10 @@ public class GroupJoinRequestLoopTest
     public void SetUp()
     {
         _testHttpClient = new TestHttpClient();
-        _loop = new GroupJoinRequestLoop(12345L, new RobloxGroupClient(_testHttpClient, _testHttpClient));
+        _loop = new GroupJoinRequestLoop(new GroupConfiguration()
+        {
+            Id = 12345,
+        }, new RobloxGroupClient(_testHttpClient, _testHttpClient));
     }
 
     [Test]

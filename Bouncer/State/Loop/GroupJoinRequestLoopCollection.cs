@@ -39,31 +39,22 @@ public class GroupJoinRequestLoopCollection
         {
             var groupId = group.Id!.Value;
             if (this._groupJoinRequestLoops.ContainsKey(groupId)) continue;
-            this._groupJoinRequestLoops[groupId] = new GroupJoinRequestLoop(groupId);
+            this._groupJoinRequestLoops[groupId] = new GroupJoinRequestLoop(group);
         }
         
         // Update the loops.
         foreach (var group in configuration.Groups!)
         {
             var groupId = group.Id!.Value;
-            try
-            {
-                var loop = this._groupJoinRequestLoops[groupId];
-                loop.Stop();
-                loop.DryRun = group.DryRun;
-                loop.OpenCloudApiKey = group.OpenCloudApiKey!;
-                loop.SetRules(group.Rules!);
-                loop.Start(group.LoopDelaySeconds);
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Error updating loop for group {groupId}.\n{e}");
-            }
+            var loop = this._groupJoinRequestLoops[groupId];
+            loop.Stop();
+            loop.SetConfiguration(group);
+            loop.OnConfigurationSet();
         }
         
         // Stop the loops that don't have configurations.
         foreach (var (robloxGroupId, loop) in this._groupJoinRequestLoops
-                     .Where(loop => configuration.Groups!.All(group => loop.Value.RobloxGroupId != group.Id)).ToList())
+                     .Where(loop => configuration.Groups!.All(group => loop.Value.Configuration.Id!.Value != group.Id)).ToList())
         {
             Logger.Debug($"Stopping join requests for group {robloxGroupId}.");
             loop.Stop();
