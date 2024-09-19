@@ -13,14 +13,19 @@ public abstract class BaseLoop
     public string Name { get; private set; }
 
     /// <summary>
+    /// Cancellation token for the active loop.
+    /// </summary>
+    public CancellationToken? LoopCancellationToken => this._loopCancellationTokenSource?.Token;
+
+    /// <summary>
     /// Semaphore to ensure a loop only runs once at a time.
     /// </summary>
     private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
     /// <summary>
-    /// Cancellation token for the active loop.
+    /// Cancellation token source for the active loop.
     /// </summary>
-    private CancellationTokenSource? _loopCancellationToken;
+    private CancellationTokenSource? _loopCancellationTokenSource;
 
     /// <summary>
     /// Whether the step of the loop is running.
@@ -41,7 +46,7 @@ public abstract class BaseLoop
     /// </summary>
     public void Stop()
     {
-        this._loopCancellationToken?.Cancel();
+        this._loopCancellationTokenSource?.Cancel();
     }
 
     /// <summary>
@@ -55,7 +60,7 @@ public abstract class BaseLoop
         
         // Run the loop in the background.
         var newLoopCancellationToken = new CancellationTokenSource();
-        this._loopCancellationToken = newLoopCancellationToken;
+        this._loopCancellationTokenSource = newLoopCancellationToken;
         Task.Run(async () =>
         {
             while (!newLoopCancellationToken.IsCancellationRequested)
