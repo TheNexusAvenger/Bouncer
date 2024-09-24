@@ -5,6 +5,7 @@ using Bouncer.State.Loop;
 using Bouncer.Web.Server.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,7 @@ public class WebServer
         {
             builder.Logging.AddProvider(Logger.NexusLogger);
         }
+        builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
         prepareApplication.Invoke(builder);
         
         // Set up custom exception handling.
