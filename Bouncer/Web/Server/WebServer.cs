@@ -84,11 +84,12 @@ public class WebServer
         }, (app) =>
         {
             // Build the API.
-            app.MapGet("/health", () =>
+            app.MapGet("/health", async (httpContext) =>
             {
                 var healthCheckResult = healthCheckState.GetHealthCheckResult();
                 var statusCode = (healthCheckResult.Status == HealthCheckResultStatus.Up ? 200 : 503);
-                return Results.Json(healthCheckResult, statusCode: statusCode);
+                var response = Results.Json(healthCheckResult, statusCode: statusCode, jsonTypeInfo: HealthCheckResultJsonContext.Default.HealthCheckResult);
+                await response.ExecuteAsync(httpContext);
             });
         });
     }
