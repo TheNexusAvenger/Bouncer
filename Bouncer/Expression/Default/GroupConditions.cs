@@ -31,7 +31,15 @@ public class GroupConditions
         {
             return groupRank > rank;
         }
-        throw new InvalidDataException($"Unsupported condition \"{condition}\". Must be EqualTo, LessThan, or GreaterThan.");
+        else if (condition == "nogreaterthan" || condition == "lessthanorequalto")
+        {
+            return groupRank > 0 && groupRank <= rank;
+        }
+        else if (condition == "atleast" || condition == "greaterthanorequalto")
+        {
+            return groupRank >= rank;
+        }
+        throw new InvalidDataException($"Unsupported condition \"{condition}\". Must be EqualTo, LessThan, GreaterThan, NoGreaterThan, LessThanOrEqualTo, AtLeast, or GreaterThanOrEqualTo.");
     }
     
     /// <summary>

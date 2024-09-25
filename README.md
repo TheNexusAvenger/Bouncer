@@ -14,19 +14,21 @@ The supported conditions include:
     (any rank).
 - `GroupRankIs(GroupId, Equality, Rank)` - True if the Roblox user
   matches the rank in the group.
-  - Equality can be `"LessThan"`, `"GreaterThan"`, and `"EqualTo"`.
-    These are all case-insensitive. Note: `LessThan` will NOT return
-    true if the user is not in the group.
+  - Equality can be `"LessThan"`, `"GreaterThan"`, `"EqualTo"`,
+    `"NoGreaterThan"` (or `"LessThanOrEqualTo"`), and `"AtLeast"`
+    (or `"GreaterThanOrEqualTo"`). These are all case-insensitive.
+    Note: `LessThan` and `NoGreaterThan` will NOT return true if
+    the user is not in the group.
   - Ex: `GroupRankIs(12345, "LessThan", 200)` returns true if the user
     is in group 12345 and has a rank less than 200.
   - Ex: `GroupRankIs(12345, "GreaterThan", 200)` returns true if the user
     has a rank greater than 200 in group 12345.
   - Ex: `GroupRankIs(12345, "EqualTo", 200)` returns true if the user
     has rank 200 in the group.
-  - Ex: `not GroupRankIs(12345, "LessThan", 200)` returns true if the user
+  - Ex: `GroupRankIs(12345, "AtLeast", 200)` returns true if the user
     does not have a rank less than 200 (has a rank greater than or equal
     to rank 200).
-  - Ex: `not GroupRankIs(12345, "GreaterThan", 200)` returns true if the user
+  - Ex: `GroupRankIs(12345, "NoGreaterThan", 200)` returns true if the user
     does not have a rank greater than 200 (has a rank less than or
     equal to rank 200).
 - `IsUser(UserId)` - True if the Roblox user is the given user.
@@ -100,13 +102,13 @@ decline everyone else by default.
       "Rules": [
         {
           "Name": "Allow Main Group High Ranks",
-          "Rule": "not GroupRankIs(23456, \"LessThan\", 200)",
+          "Rule": "GroupRankIs(23456, \"AtLeast\", 200)",
           "Action": "Accept"
         },
         {
           "Name": "Ignore Main Group Low Ranks (Manual Approval)",
           "Rule": "IsInGroup(23456)",
-          "Action": "Decline"
+          "Action": "Ignore"
         },
         {
           "Name": "Deny Other Users",
