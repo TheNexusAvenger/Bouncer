@@ -7,7 +7,7 @@ using Sprache;
 
 namespace Bouncer.Diagnostic;
 
-public class BaseConfigurationVerification<T>
+public class BaseConfigurationVerification<T> where T : struct, Enum
 {
     /// <summary>
     /// Verifies a rule entry.
@@ -58,7 +58,7 @@ public class BaseConfigurationVerification<T>
     }
 }
 
-public class ConfigurationVerification : BaseConfigurationVerification<JoinRequestAction?>
+public class ConfigurationVerification : BaseConfigurationVerification<JoinRequestAction>
 {
     /// <summary>
     /// Verifies the rules for the groups.
