@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Bouncer.State;
 
-public class BaseRuleEntry<T>
+public class BaseRuleEntry<T> where T : struct, Enum
 {
     /// <summary>
     /// Optional name of the role.
@@ -23,7 +24,7 @@ public class BaseRuleEntry<T>
     public T? Action { get; set; }
 }
 
-public class JoinRequestRuleEntry : BaseRuleEntry<JoinRequestAction?>
+public class JoinRequestRuleEntry : BaseRuleEntry<JoinRequestAction>
 {
     
 }
@@ -61,7 +62,7 @@ public class LoggingConfiguration
     /// <summary>
     /// Minimum log level to show in the logs.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter<LogLevel>))]
     public LogLevel MinimumLogLevel { get; set; } = LogLevel.Information;
 }
 
