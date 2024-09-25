@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Bouncer.State;
 
-public class BaseRuleEntry<T> where T : struct, Enum
+public abstract class BaseRuleEntry<T> where T : struct, Enum
 {
     /// <summary>
     /// Optional name of the role.
@@ -19,14 +19,18 @@ public class BaseRuleEntry<T> where T : struct, Enum
     
     /// <summary>
     /// Action to perform when the rule applies.
+    /// Left as abstract to allow implementations to set JsonStringEnumConverter.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public T? Action { get; set; }
+    public abstract T? Action { get; set; }
 }
 
 public class JoinRequestRuleEntry : BaseRuleEntry<JoinRequestAction>
 {
-    
+    /// <summary>
+    /// Action to perform when the rule applies.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter<JoinRequestAction>))]
+    public override JoinRequestAction? Action { get; set; }
 }
 
 public class GroupConfiguration
