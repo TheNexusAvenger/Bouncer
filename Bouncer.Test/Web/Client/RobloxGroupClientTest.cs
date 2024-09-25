@@ -46,4 +46,12 @@ public class RobloxGroupClientTest
         var response = this._client.GetJoinRequests(12345, "token", 1).Result;
         Assert.That(response.GroupJoinRequests[0].UserId, Is.EqualTo(156));
     }
+
+    [Test]
+    public void TestGetJoinRequestsFilter()
+    {
+        this._testHttpClient.SetResponse("https://apis.roblox.com/cloud/v2/groups/12345/join-requests?maxPageSize=1&filter=filter", HttpStatusCode.OK, "{\"groupJoinRequests\":[{\"path\":\"groups/12345/join-requests/156\",\"createDate\":\"2023-07-05T12:34:56Z\",\"user\":\"users/156\"}],\"nextPageToken\":\"token\"}");
+        var response = this._client.GetJoinRequests(12345, maxPageSize: 1, filter: "filter").Result;
+        Assert.That(response.GroupJoinRequests[0].UserId, Is.EqualTo(156));
+    }
 }

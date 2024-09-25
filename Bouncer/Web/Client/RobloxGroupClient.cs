@@ -71,13 +71,18 @@ public class RobloxGroupClient
     /// <param name="robloxGroupId">Roblox group id to get the group requests of.</param>
     /// <param name="pageToken">Optional token for the join request page to get.</param>
     /// <param name="maxPageSize">Optional max amount of join requests to get.</param>
+    /// <param name="filter">Optional filter for the join requests.</param>
     /// <returns>Join requests for the group.</returns>
-    public async Task<GroupJoinRequestResponse> GetJoinRequests(long robloxGroupId, string? pageToken = null, int maxPageSize = 20)
+    public async Task<GroupJoinRequestResponse> GetJoinRequests(long robloxGroupId, string? pageToken = null, int maxPageSize = 20, string? filter = null)
     {
         var url = $"https://apis.roblox.com/cloud/v2/groups/{robloxGroupId}/join-requests?maxPageSize={maxPageSize}";
         if (pageToken != null)
         {
             url = $"{url}&pageToken={pageToken}";
+        }
+        if (filter != null)
+        {
+            url = $"{url}&filter={filter}";
         }
         return await this._robloxClient.GetAsync(url, GroupJoinRequestResponseJsonContext.Default.GroupJoinRequestResponse);
     }
