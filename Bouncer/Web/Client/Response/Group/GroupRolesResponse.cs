@@ -76,7 +76,7 @@ public class GroupRolesResponse : BaseRobloxOpenCloudResponse
 }
 
 [JsonSerializable(typeof(GroupRolesResponse))]
-[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class GroupRolesResponseJsonContext : JsonSerializerContext
 {
 }

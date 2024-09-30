@@ -47,7 +47,7 @@ public class BaseRobloxOpenCloudResponse
 
 [JsonSerializable(typeof(RobloxOpenCloudError))]
 [JsonSerializable(typeof(BaseRobloxOpenCloudResponse))]
-[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class BaseRobloxOpenCloudResponseJsonContext : JsonSerializerContext
 {
 }

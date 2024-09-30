@@ -127,7 +127,7 @@ public class Configuration
 [JsonSerializable(typeof(Configuration))]
 [JsonSerializable(typeof(GroupConfiguration))]
 [JsonSerializable(typeof(JoinRequestRuleEntry))]
-[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 internal partial class ConfigurationJsonContext : JsonSerializerContext
 {
 }

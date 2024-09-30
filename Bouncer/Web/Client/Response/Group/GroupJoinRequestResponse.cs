@@ -53,7 +53,7 @@ public class GroupJoinRequestResponse : BaseRobloxOpenCloudResponse
 }
 
 [JsonSerializable(typeof(GroupJoinRequestResponse))]
-[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, IncludeFields = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class GroupJoinRequestResponseJsonContext : JsonSerializerContext
 {
 }
