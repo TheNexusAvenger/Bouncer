@@ -15,6 +15,11 @@ namespace Bouncer.Web.Server;
 public class WebServer
 {
     /// <summary>
+    /// Host used for the web server.
+    /// </summary>
+    public string Host { get; set; } = "localhost";
+    
+    /// <summary>
     /// Port used for the web server.
     /// </summary>
     public ushort Port { get; set; } = 8000;
@@ -61,7 +66,7 @@ public class WebServer
         
         // Run the server.
         Logger.Info($"Serving on port {Port}.");
-        await app.RunAsync($"http://localhost:{Port}");
+        await app.RunAsync($"http://{Host}:{Port}");
     }
     
     /// <summary>
