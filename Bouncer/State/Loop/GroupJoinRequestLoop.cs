@@ -153,7 +153,7 @@ public class GroupJoinRequestLoop : BaseConfigurableLoop<GroupConfiguration>
                         if (rule.Action == JoinRequestAction.Accept)
                         {
                             Logger.Info($"{logPrefix}User {robloxUserId} matched rule \"{rule.Name}\" for group {robloxGroupId} and will be accepted.");
-                            if (dryRun)
+                            if (!dryRun)
                             {
                                 await this._robloxGroupClient.AcceptJoinRequestAsync(robloxGroupId, robloxUserId);
                             }
@@ -162,7 +162,7 @@ public class GroupJoinRequestLoop : BaseConfigurableLoop<GroupConfiguration>
                         else if (rule.Action == JoinRequestAction.Decline)
                         {
                             Logger.Info($"{logPrefix}User {robloxUserId} matched rule \"{rule.Name}\" for group {robloxGroupId} and will be declined.");
-                            if (dryRun)
+                            if (!dryRun)
                             {
                                 await this._robloxGroupClient.DeclineJoinRequestAsync(robloxGroupId, robloxUserId);
                             }
